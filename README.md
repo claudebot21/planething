@@ -1,45 +1,60 @@
-# Welcome to your Convex + React (Vite) + Convex Auth app
+# Planething ✈️
 
-This is a [Convex](https://convex.dev/) project created with [`npm create convex`](https://www.npmjs.com/package/create-convex).
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.txt)
+[![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
+[![Convex](https://img.shields.io/badge/Convex-1.23-orange)](https://convex.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF)](https://vitejs.dev/)
 
-After the initial setup (<2 minutes) you'll have a working full-stack app using:
+A real-time flight tracking dashboard for Bucharest's Henri Coandă International Airport (OTP). Built with Convex, React, and Vite.
 
-- Convex as your backend (database, server logic)
-- [React](https://react.dev/) as your frontend (web page interactivity)
-- [Vite](https://vitest.dev/) for optimized web hosting
-- [Tailwind](https://tailwindcss.com/) for building great looking UI
-- [Convex Auth](https://labs.convex.dev/auth) for authentication
+**Features:**
+- 🛫 Real-time departures and arrivals
+- ⏱️ Live delay tracking with visual indicators
+- 🔐 User authentication via Convex Auth
+- 📱 Responsive design with dark theme
+- 🔄 Infinite scroll flight list
+- 📊 Flight statistics dashboard
 
-## Get started
+## 🚀 Quick Start
 
-If you just cloned this codebase and didn't use `npm create convex`, run:
-
-```
+```bash
+# Install dependencies
 npm install
+
+# Set up environment variables
+cp .env.example .env
+# Add your AERODATABOX_API_KEY from RapidAPI
+
+# Start development servers
 npm run dev
 ```
 
-If you're reading this README on GitHub and want to use this template, run:
+## 🛠️ Tech Stack
 
+- **Frontend:** React 19, Vite, Tailwind CSS v4, React Router
+- **Backend:** Convex (database + serverless functions)
+- **Auth:** Convex Auth with password provider
+- **API:** AeroDataBox via RapidAPI
+- **UI:** Custom components with Radix UI
+
+## 📊 Data Sources
+
+- **AeroDataBox API** (RapidAPI) — Real-time flight schedules
+- **Airport:** OTP (Bucharest Henri Coandă International)
+
+## 📝 Environment Variables
+
+```env
+AERODATABOX_API_KEY=your_rapidapi_key_here
 ```
-npm create convex@latest -- -t react-vite-convexauth
+
+## 📦 Deployment
+
+Build for production:
+```bash
+npm run build
 ```
 
-For more information on how to configure Convex Auth, check out the [Convex Auth docs](https://labs.convex.dev/auth/).
+## License
 
-For more examples of different Convex Auth flows, check out this [example repo](https://www.convex.dev/templates/convex-auth).
-
-## Learn more
-
-To learn more about developing your project with Convex, check out:
-
-- The [Tour of Convex](https://docs.convex.dev/get-started) for a thorough introduction to Convex principles.
-- The rest of [Convex docs](https://docs.convex.dev/) to learn about all Convex features.
-- [Stack](https://stack.convex.dev/) for in-depth articles on advanced topics.
-
-## Join the community
-
-Join thousands of developers building full-stack apps with Convex:
-
-- Join the [Convex Discord community](https://convex.dev/community) to get help in real-time.
-- Follow [Convex on GitHub](https://github.com/get-convex/), star and contribute to the open-source implementation of Convex.
+Apache 2.0 — see [LICENSE.txt](LICENSE.txt)
