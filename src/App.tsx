@@ -1,66 +1,88 @@
 // App.tsx
 "use client";
 
-// import { Authenticated, Unauthenticated } from "convex/react";
-// import { useAuthActions } from "@convex-dev/auth/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import {
   Plane,
-  // LogOut,
-  // Eye,
-  // EyeOff,
-  // Sparkles,
   ArrowRight,
   Moon,
   Sun,
+  Keyboard,
 } from "lucide-react";
 import { Dashboard } from "./components/Dashboard";
 import { FlightDetails } from "./components/FlightDetails";
 import { Footer as GlobalFooter } from "./components/Footer";
+import {
+  useKeyboardShortcuts,
+  KeyboardShortcutsHelp,
+} from "./hooks/useKeyboardShortcuts";
 
 export default function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<MainApp />} />
-        <Route
-          path="/flight/:id"
-          element={
-            // <Authenticated>
-            <FlightDetails />
-            // </Authenticated>
-          }
-        />
+        <Route path="/flight/:id" element={<FlightDetails />} />
       </Routes>
     </Router>
   );
 }
 
 function MainApp() {
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [theme, setTheme] = useState(() => {
+    if (typeof document === "undefined") return "dark";
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  });
+
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    const isDark = root.classList.contains("dark");
+    if (isDark) {
+      root.classList.remove("dark");
+      setTheme("light");
+      localStorage.setItem("theme", "light");
+    } else {
+      root.classList.add("dark");
+      setTheme("dark");
+      localStorage.setItem("theme", "dark");
+    }
+  };
+
+  const focusSearch = () => {
+    // Find the search input in Dashboard
+    const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+    searchInput?.focus();
+  };
+
+  const refreshFlights = () => {
+    window.location.reload();
+  };
+
+  const { showHelp, setShowHelp } = useKeyboardShortcuts({
+    onToggleTheme: toggleTheme,
+    onFocusSearch: focusSearch,
+    onRefresh: refreshFlights,
+  });
+
   return (
     <>
       <SkyBackdrop />
-      <TopBar />
+      <TopBar theme={theme} onToggleTheme={toggleTheme} />
       <main className="relative z-10">
-        {/* <Authenticated> */}
         <Showcase />
-        {/* </Authenticated> */}
         <section id="content" className="mx-auto max-w-7xl px-3 pb-14 sm:px-4">
-          {/* <Authenticated> */}
           <Dashboard />
-          {/* </Authenticated>
-          <Unauthenticated>
-            <AuthPanel />
-          </Unauthenticated> */}
         </section>
       </main>
       <GlobalFooter />
+      <KeyboardShortcutsHelp isOpen={showHelp} onClose={() => setShowHelp(false)} />
     </>
   );
 }
 
-function TopBar() {
+function TopBar({ theme, onToggleTheme }: { theme: string; onToggleTheme: () => void }) {
   return (
     <div className="pointer-events-none sticky inset-x-0 top-0 z-40 flex justify-center p-3 fade-in-up">
       <div className="pointer-events-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),_0_10px_40px_-20px_rgba(56,189,248,0.35)] backdrop-blur-md sm:px-4">
@@ -86,19 +108,19 @@ function TopBar() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
-          {/* <Unauthenticated>
-            <a
-              href="#auth"
-              className="inline-flex items-center gap-2 rounded-md bg-white/5 px-3 py-1.5 text-sm text-white/80 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
-            >
-              <Sparkles className="h-4 w-4 text-cyan-300" />
-              Sign in
-            </a>
-          </Unauthenticated>
-          <Authenticated>
-            <SignOutButton />
-          </Authenticated> */}
+          <button
+            onClick={() => {
+              const event = new KeyboardEvent('keydown', { key: '?' });
+              window.dispatchEvent(event);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1.5 text-xs text-white/60 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
+            aria-label="Keyboard shortcuts"
+            title="Keyboard shortcuts (?)"
+          >
+            <Keyboard className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Shortcuts</span>
+          </button>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
       </div>
     </div>
@@ -320,33 +342,16 @@ function SkyBackdrop() {
 //   );
 // }
 
-function ThemeToggle() {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof document === "undefined") return true;
-    return document.documentElement.classList.contains("dark");
-  });
-
-  const toggle = () => {
-    const root = document.documentElement;
-    const next = !isDark;
-    setIsDark(next);
-    root.classList.toggle("dark", next);
-    try {
-      localStorage.setItem("theme", next ? "dark" : "light");
-    } catch {
-      // ignore
-    }
-  };
-
+function ThemeToggle({ theme, onToggle }: { theme: string; onToggle: () => void }) {
   return (
     <button
       type="button"
-      onClick={toggle}
+      onClick={onToggle}
       className="mr-1 inline-flex items-center gap-2 rounded-md bg-white/5 px-2.5 py-1.5 text-sm text-white/80 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
-      aria-label="Toggle theme"
-      title="Toggle theme"
+      aria-label="Toggle theme (Cmd/Ctrl+T)"
+      title="Toggle theme (Cmd/Ctrl+T)"
     >
-      {isDark ? (
+      {theme === "dark" ? (
         <Sun className="h-4 w-4 text-amber-300" />
       ) : (
         <Moon className="h-4 w-4 text-cyan-300" />
